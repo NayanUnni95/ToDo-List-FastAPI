@@ -1,10 +1,14 @@
 from fastapi import Depends, HTTPException, status
+from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 from ..services.jwtToken import oauth2_scheme, SECRET_KEY, ALGORITHM
-from ..schema import schemas
+from ..database import config
+from ..model import models
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(config.get_db)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -14,9 +18,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
         username = payload.get("uname")
-        if username is None:
+        user = db.query(models.Users).filter(models.Users.uname == username).first()
+        if not user:
             raise credentials_exception
-        token_data = schemas.TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    return username
+    return user

@@ -23,6 +23,13 @@ class UserLogin(BaseModel):
     password: str
 
 
+class CurrentUser(BaseException):
+    id: Optional[UUID4]
+    name: str
+    uname: str
+    password: str
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str | None = "bearer"

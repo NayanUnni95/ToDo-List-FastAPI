@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, ForeignKey, DateTime
+from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, DateTime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from ..database.config import Base
@@ -16,9 +16,7 @@ class Users(Base):
 
 class Tasks(Base):
     __tablename__ = "tasks"
-    taskId = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
-    )
+    taskId = Column(Integer, primary_key=True, default=uuid.uuid4, index=True)
     userId = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     title = Column(String)
     desc = Column(String)

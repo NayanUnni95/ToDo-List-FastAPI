@@ -1,19 +1,16 @@
-from fastapi import Depends
-from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
 from ..schema import schemas
 from ..model import models
-from ..database import config
 from ..services.hashing import Hash
 from ..services.jwtToken import create_access_token
-from ..services.Oauth2 import get_current_user
 
 
 def signup_user(request, db):
     users = db.query(models.Users).filter(models.Users.uname == request.uname).first()
     if users:
-        return schemas.InvalidInput(
-            description="That username is unavailable :( please try a different one.",
-            status_code=404,
+        raise HTTPException(
+            status_code=400,
+            detail="That username is unavailable :( please try a different one.",
         )
     new_user = models.Users(
         name=request.name,
@@ -33,22 +30,32 @@ def signup_user(request, db):
 
 def login_user(request: schemas.UserLogin, db):
     user = db.query(models.Users).filter(models.Users.uname == request.username).first()
-    print(user)
     if not user:
-        return schemas.InvalidInput(description="Invalid Credentials", status_code=404)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     if not Hash.validate(request.password, user.password):
-        return schemas.InvalidInput(description="Incorrect Password", status_code=404)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect Password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     access_token = create_access_token(data={"uname": user.uname})
     return schemas.Token(access_token=access_token, token_type="bearer")
 
 
-async def delete_user(request, db):
-    username = await get_current_user(request.access_token)
-    user = db.query(models.Users).filter(models.Users.uname == username).first()
-    if not user:
-        # response.status_code = status.HTTP_404_NOT_FOUND
-        return "User Not Found..."
-    # user.delete(synchronize_session=False)
-    # db.commit()
-    return  user
-    # return f"User deleted with Data: {user}"
+async def delete_user(db, get_current_user):
+    user = (
+        db.query(models.Users)
+        .filter(models.Users.id == get_current_user.id)
+        .delete(synchronize_session=False)
+    )
+    if user == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User Not Found...",
+        )
+    db.commit()
+    return {"message": "Account successfully deleted."}
