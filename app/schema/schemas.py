@@ -28,6 +28,10 @@ class Token(BaseModel):
     token_type: str | None = "bearer"
 
 
+class TokenData(BaseModel):
+    username: str | None = None
+
+
 class InvalidInput(BaseModel):
     status_code: int
     description: str | None = "Invalid"
