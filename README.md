@@ -35,14 +35,16 @@ pip install -r requirements.txt
 ### Run the Application:
 
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
+
+### [API Doc](http://localhost:8000/docs)
 
 ### Project features
 
-- Login, SignUp etc.
-- Create a ToDos
-- View ToDos
-- Mark as complete
-- Edit ToDo
-- Delete ToDo
+- [ ] Login, SignUp etc.
+- [ ] Create a ToDos
+- [ ] View ToDos
+- [ ] Mark as complete
+- [ ] Edit ToDo
+- [ ] Delete ToDo
