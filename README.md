@@ -43,8 +43,8 @@ uvicorn app.main:app --reload
 ### Project features
 
 - [x] Login, SignUp etc.
-- [ ] Create a ToDos
-- [ ] View ToDos
+- [x] Create ToDo
+- [x] View ToDo
 - [ ] Mark as complete
 - [ ] Edit ToDo
 - [ ] Delete ToDo

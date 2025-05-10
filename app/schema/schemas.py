@@ -1,5 +1,6 @@
 from pydantic import BaseModel, UUID4
 from typing import Optional
+from datetime import datetime
 
 
 class UserSignup(BaseModel):
@@ -42,3 +43,25 @@ class TokenData(BaseModel):
 class InvalidInput(BaseModel):
     status_code: int
     description: str | None = "Invalid"
+
+
+class TodoBase(BaseModel):
+    title: str
+    desc: str
+    deadline: datetime
+
+
+class CreateTodo(TodoBase):
+    pass
+
+
+class EditTodo(TodoBase):
+    isCompleted: bool
+
+
+class ShowAllTodo(BaseModel):
+    taskId: int
+    title: str
+    desc: str
+    deadline: str
+    isCompleted: str

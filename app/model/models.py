@@ -7,7 +7,13 @@ from sqlalchemy.orm import relationship
 
 class Users(Base):
     __tablename__ = "users"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        unique=True,
+        default=uuid.uuid4,
+        index=True,
+    )
     name = Column(String)
     uname = Column(String)
     password = Column(String)
@@ -16,10 +22,10 @@ class Users(Base):
 
 class Tasks(Base):
     __tablename__ = "tasks"
-    taskId = Column(Integer, primary_key=True, default=uuid.uuid4, index=True)
+    taskId = Column(Integer, primary_key=True, unique=True, index=True)
     userId = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     title = Column(String)
     desc = Column(String)
     deadline = Column(DateTime)
-    isCompleted = Column(Boolean)
+    isCompleted = Column(Boolean, default=False)
     creator = relationship("Users", back_populates="task")
