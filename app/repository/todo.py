@@ -45,29 +45,28 @@ def view_task(taskId, db, get_current_user):
 
 
 def edit_task(request, db, get_current_user):
-    task = (
-        db.query(models.Tasks)
-        .filter(
-            models.Tasks.userId == get_current_user.id,
-            models.Tasks.taskId == request.taskId,
-        )
-        .first()
-    )
-    if not task:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Todo not found. Invalid taskId : {request.taskId}",
-        )
     update_todo: dict = {
         "title": request.title,
         "desc": request.desc,
         "deadline": request.deadline,
         "isCompleted": request.isCompleted,
     }
-    task.update(
-        update_todo,
-        synchronize_session=False,
+    task = (
+        db.query(models.Tasks)
+        .filter(
+            models.Tasks.userId == get_current_user.id,
+            models.Tasks.taskId == request.taskId,
+        )
+        .update(
+            update_todo,
+            synchronize_session=False,
+        )
     )
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Todo not found. Invalid taskId : {request.taskId}",
+        )
     db.commit()
     return {"message": "Todo content successfully updated."}
 
@@ -88,3 +87,27 @@ def delete_task(taskId, db, get_current_user):
         )
     db.commit()
     return {"message": "Todo successfully deleted."}
+
+
+def mark_as_completed(taskId, db, get_current_user):
+    update_todo: dict = {
+        "isCompleted": True,
+    }
+    task = (
+        db.query(models.Tasks)
+        .filter(
+            models.Tasks.userId == get_current_user.id,
+            models.Tasks.taskId == taskId,
+        )
+        .update(
+            update_todo,
+            synchronize_session=False,
+        )
+    )
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Todo not found. Invalid taskId : {taskId}",
+        )
+    db.commit()
+    return {"message": "Todo marked as completed."}

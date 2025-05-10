@@ -35,12 +35,12 @@ def view(
 
 
 @router.put("/edit")
-async def edit(
+def edit(
     request: schemas.EditTodo,
     db: Session = Depends(get_db),
     get_current_user: schemas.CurrentUser = Depends(get_current_user),
 ):
-    return await todo.edit_task(request, db, get_current_user)
+    return todo.edit_task(request, db, get_current_user)
 
 
 @router.delete("/delete")
@@ -49,4 +49,13 @@ def delete(
     db: Session = Depends(get_db),
     get_current_user: schemas.CurrentUser = Depends(get_current_user),
 ):
-    return  todo.delete_task(taskId, db, get_current_user)
+    return todo.delete_task(taskId, db, get_current_user)
+
+
+@router.put("/mark")
+def mark_as_completed(
+    taskId,
+    db: Session = Depends(get_db),
+    get_current_user: schemas.CurrentUser = Depends(get_current_user),
+):
+    return todo.mark_as_completed(taskId, db, get_current_user)

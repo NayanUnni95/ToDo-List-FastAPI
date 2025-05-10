@@ -45,6 +45,7 @@ uvicorn app.main:app --reload
 - [x] Login, SignUp etc.
 - [x] Create ToDo
 - [x] View ToDo
-- [ ] Mark as complete
+- [x] Mark a todo as completed
 - [x] Edit ToDo
 - [x] Delete ToDo
+- [ ] Group by completed, To be done & Time elapsed
