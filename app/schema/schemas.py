@@ -56,6 +56,7 @@ class CreateTodo(TodoBase):
 
 
 class EditTodo(TodoBase):
+    taskId: int
     isCompleted: bool
 
 

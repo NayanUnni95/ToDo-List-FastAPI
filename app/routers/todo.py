@@ -32,3 +32,21 @@ def view(
     get_current_user: schemas.CurrentUser = Depends(get_current_user),
 ):
     return todo.view_task(taskId, db, get_current_user)
+
+
+@router.put("/edit")
+async def edit(
+    request: schemas.EditTodo,
+    db: Session = Depends(get_db),
+    get_current_user: schemas.CurrentUser = Depends(get_current_user),
+):
+    return await todo.edit_task(request, db, get_current_user)
+
+
+@router.delete("/delete")
+def delete(
+    taskId,
+    db: Session = Depends(get_db),
+    get_current_user: schemas.CurrentUser = Depends(get_current_user),
+):
+    return  todo.delete_task(taskId, db, get_current_user)

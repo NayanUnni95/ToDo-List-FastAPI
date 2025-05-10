@@ -46,5 +46,5 @@ uvicorn app.main:app --reload
 - [x] Create ToDo
 - [x] View ToDo
 - [ ] Mark as complete
-- [ ] Edit ToDo
-- [ ] Delete ToDo
+- [x] Edit ToDo
+- [x] Delete ToDo
