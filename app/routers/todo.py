@@ -17,6 +17,14 @@ def create(
     return todo.create_task(request, db, get_current_user)
 
 
+@router.get("/group")
+def create(
+    db: Session = Depends(get_db),
+    get_current_user: schemas.CurrentUser = Depends(get_current_user),
+):
+    return todo.group_by(db, get_current_user)
+
+
 @router.get("/view")
 def view_all(
     db: Session = Depends(get_db),
@@ -43,15 +51,6 @@ def edit(
     return todo.edit_task(request, db, get_current_user)
 
 
-@router.delete("/delete")
-def delete(
-    taskId,
-    db: Session = Depends(get_db),
-    get_current_user: schemas.CurrentUser = Depends(get_current_user),
-):
-    return todo.delete_task(taskId, db, get_current_user)
-
-
 @router.put("/mark")
 def mark_as_completed(
     taskId,
@@ -59,3 +58,12 @@ def mark_as_completed(
     get_current_user: schemas.CurrentUser = Depends(get_current_user),
 ):
     return todo.mark_as_completed(taskId, db, get_current_user)
+
+
+@router.delete("/delete")
+def delete(
+    taskId,
+    db: Session = Depends(get_db),
+    get_current_user: schemas.CurrentUser = Depends(get_current_user),
+):
+    return todo.delete_task(taskId, db, get_current_user)

@@ -1,5 +1,7 @@
 from fastapi import HTTPException, status
 from ..model import models
+from typing import List
+from datetime import datetime
 
 
 def create_task(request, db, get_current_user):
@@ -14,6 +16,29 @@ def create_task(request, db, get_current_user):
     db.commit()
     db.refresh(new_task)
     return new_task
+
+
+def group_by(db, get_current_user):
+    task = (
+        db.query(models.Tasks).filter(models.Tasks.userId == get_current_user.id).all()
+    )
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_204_NO_CONTENT,
+            detail="Empty Task",
+        )
+    pending: List = []
+    completed: List = []
+    timeElapsed: List = []
+    for data in task:
+        if not data.isCompleted:
+            if data.deadline < datetime.now():
+                timeElapsed.append(data)
+            else:
+                pending.append(data)
+        elif data.isCompleted:
+            completed.append(data)
+    return {"pending": pending, "completed": completed, "timeElapsed": timeElapsed}
 
 
 def view_all_task(db, get_current_user):

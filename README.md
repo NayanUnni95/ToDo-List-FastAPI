@@ -48,4 +48,4 @@ uvicorn app.main:app --reload
 - [x] Mark a todo as completed
 - [x] Edit ToDo
 - [x] Delete ToDo
-- [ ] Group by completed, To be done & Time elapsed
+- [x] Group by completed, To be done & Time elapsed

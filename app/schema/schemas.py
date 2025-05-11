@@ -1,5 +1,5 @@
 from pydantic import BaseModel, UUID4
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -66,3 +66,12 @@ class ShowAllTodo(BaseModel):
     desc: str
     deadline: str
     isCompleted: str
+
+
+class GroupBy(BaseModel):
+    pending: List | None = []
+    completed: List | None = []
+    timeElapsed: List | None = []
+
+    class Config:
+        orm_mode = True
