@@ -1,9 +1,20 @@
+"""
+This module provides the `get_current_user` function for authenticating and retrieving
+the current user based on a JWT token.
+"""
+
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 from ..services.jwtToken import oauth2_scheme, SECRET_KEY, ALGORITHM
 from ..database import config
 from ..model import models
+
+"""
+Validates the provided JWT token, decodes it to extract the username, and retrieves
+the corresponding user from the database. Raises an HTTPException if the token is
+invalid or the user does not exist.
+"""
 
 
 async def get_current_user(

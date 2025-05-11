@@ -1,7 +1,16 @@
+"""
+This module provides repository functions for managing tasks in a To-Do List application using FastAPI.
+"""
+
 from fastapi import HTTPException, status
 from ..model import models
 from typing import List
 from datetime import datetime
+
+"""
+create_task(request, db, get_current_user):
+    Creates a new task for the currently authenticated user.
+"""
 
 
 def create_task(request, db, get_current_user):
@@ -16,6 +25,12 @@ def create_task(request, db, get_current_user):
     db.commit()
     db.refresh(new_task)
     return new_task
+
+
+"""
+group_by(db, get_current_user):
+    Groups tasks of the currently authenticated user into pending, completed, and time-elapsed categories.
+"""
 
 
 def group_by(db, get_current_user):
@@ -41,6 +56,12 @@ def group_by(db, get_current_user):
     return {"pending": pending, "completed": completed, "timeElapsed": timeElapsed}
 
 
+"""
+view_all_task(db, get_current_user):
+    Retrieves all tasks for the currently authenticated user.
+"""
+
+
 def view_all_task(db, get_current_user):
     task = (
         db.query(models.Tasks).filter(models.Tasks.userId == get_current_user.id).all()
@@ -51,6 +72,12 @@ def view_all_task(db, get_current_user):
             detail="Empty Task",
         )
     return task
+
+
+"""
+view_task(taskId, db, get_current_user):
+    Retrieves a specific task by its ID for the currently authenticated user.
+"""
 
 
 def view_task(taskId, db, get_current_user):
@@ -67,6 +94,12 @@ def view_task(taskId, db, get_current_user):
             detail=f"Todo not found. Invalid taskId : {taskId}",
         )
     return task
+
+
+"""
+edit_task(request, db, get_current_user):
+    Updates the details of an existing task for the currently authenticated user.
+"""
 
 
 def edit_task(request, db, get_current_user):
@@ -96,6 +129,12 @@ def edit_task(request, db, get_current_user):
     return {"message": "Todo content successfully updated."}
 
 
+"""
+delete_task(taskId, db, get_current_user):
+    Deletes a specific task by its ID for the currently authenticated user.
+"""
+
+
 def delete_task(taskId, db, get_current_user):
     todo = (
         db.query(models.Tasks)
@@ -112,6 +151,12 @@ def delete_task(taskId, db, get_current_user):
         )
     db.commit()
     return {"message": "Todo successfully deleted."}
+
+
+"""
+mark_as_completed(taskId, db, get_current_user):
+    Marks a specific task as completed for the currently authenticated user.
+"""
 
 
 def mark_as_completed(taskId, db, get_current_user):

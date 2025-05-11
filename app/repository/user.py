@@ -1,8 +1,17 @@
+"""
+This module provides repository functions for user-related operations in a FastAPI application.
+"""
+
 from fastapi import HTTPException, status
 from ..schema import schemas
 from ..model import models
 from ..services.hashing import Hash
 from ..services.jwtToken import create_access_token
+
+"""
+signup_user(request, db):
+    Registers a new user in the database. Checks for username availability and hashes the password before saving.
+"""
 
 
 def signup_user(request, db):
@@ -28,6 +37,12 @@ def signup_user(request, db):
     )
 
 
+"""
+login_user(request: schemas.UserLogin, db):
+    Authenticates a user by validating their credentials and generates a JWT access token.
+"""
+
+
 def login_user(request: schemas.UserLogin, db):
     user = db.query(models.Users).filter(models.Users.uname == request.username).first()
     if not user:
@@ -44,6 +59,12 @@ def login_user(request: schemas.UserLogin, db):
         )
     access_token = create_access_token(data={"uname": user.uname})
     return schemas.Token(access_token=access_token, token_type="bearer")
+
+
+"""
+delete_user(db, get_current_user):
+    Deletes the currently authenticated user's account from the database.
+"""
 
 
 async def delete_user(db, get_current_user):

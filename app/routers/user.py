@@ -1,3 +1,7 @@
+"""
+This module defines the user-related API endpoints for the FastAPI application.
+"""
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
@@ -9,10 +13,19 @@ from ..repository import user
 
 router = APIRouter(tags=["User"])
 
+"""
+- POST /signup: Endpoint for user registration.
+"""
+
 
 @router.post("/signup", status_code=201)
 async def signup(request: schemas.UserSignup, db: Session = Depends(config.get_db)):
     return user.signup_user(request, db)
+
+
+"""
+- POST /login: Endpoint for user login and authentication.
+"""
 
 
 @router.post("/login")
@@ -20,6 +33,11 @@ async def login(
     request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(config.get_db)
 ):
     return user.login_user(request, db)
+
+
+"""
+- DELETE /remove: Endpoint for deleting the currently authenticated user.
+"""
 
 
 @router.delete("/remove")

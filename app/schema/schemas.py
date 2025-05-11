@@ -1,3 +1,7 @@
+"""
+This module contains Pydantic schema definitions for the ToDo-List-FastAPI application.
+"""
+
 from pydantic import BaseModel, UUID4
 from typing import Optional, List
 from datetime import datetime

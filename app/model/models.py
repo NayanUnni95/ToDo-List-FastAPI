@@ -1,8 +1,16 @@
+"""
+This module defines the SQLAlchemy ORM models for the ToDo List FastAPI application.
+"""
+
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, DateTime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from ..database.config import Base
 from sqlalchemy.orm import relationship
+
+"""
+Represents the users of the application.
+"""
 
 
 class Users(Base):
@@ -18,6 +26,11 @@ class Users(Base):
     uname = Column(String)
     password = Column(String)
     task = relationship("Tasks", back_populates="creator")
+
+
+"""
+Represents the tasks created by users.
+"""
 
 
 class Tasks(Base):
