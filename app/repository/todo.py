@@ -13,7 +13,7 @@ create_task(request, db, get_current_user):
 """
 
 
-def create_task(request, db, get_current_user):
+def create_task(request, session, get_current_user):
     new_task = models.Tasks(
         userId=get_current_user.id,
         title=request.title,
@@ -21,9 +21,9 @@ def create_task(request, db, get_current_user):
         deadline=request.deadline,
         isCompleted=False,
     )
-    db.add(new_task)
-    db.commit()
-    db.refresh(new_task)
+    session.add(new_task)
+    session.commit()
+    session.refresh(new_task)
     return new_task
 
 
@@ -33,9 +33,11 @@ group_by(db, get_current_user):
 """
 
 
-def group_by(db, get_current_user):
+def group_by(session, get_current_user):
     task = (
-        db.query(models.Tasks).filter(models.Tasks.userId == get_current_user.id).all()
+        session.query(models.Tasks)
+        .filter(models.Tasks.userId == get_current_user.id)
+        .all()
     )
     if not task:
         raise HTTPException(
@@ -80,9 +82,9 @@ view_task(taskId, db, get_current_user):
 """
 
 
-def view_task(taskId, db, get_current_user):
+def view_task(taskId, session, get_current_user):
     task = (
-        db.query(models.Tasks)
+        session.query(models.Tasks)
         .filter(
             models.Tasks.taskId == taskId, models.Tasks.userId == get_current_user.id
         )
@@ -102,7 +104,7 @@ edit_task(request, db, get_current_user):
 """
 
 
-def edit_task(request, db, get_current_user):
+def edit_task(request, session, get_current_user):
     update_todo: dict = {
         "title": request.title,
         "desc": request.desc,
@@ -110,7 +112,7 @@ def edit_task(request, db, get_current_user):
         "isCompleted": request.isCompleted,
     }
     task = (
-        db.query(models.Tasks)
+        session.query(models.Tasks)
         .filter(
             models.Tasks.userId == get_current_user.id,
             models.Tasks.taskId == request.taskId,
@@ -125,7 +127,7 @@ def edit_task(request, db, get_current_user):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Todo not found. Invalid taskId : {request.taskId}",
         )
-    db.commit()
+    session.commit()
     return {"message": "Todo content successfully updated."}
 
 
@@ -135,9 +137,9 @@ delete_task(taskId, db, get_current_user):
 """
 
 
-def delete_task(taskId, db, get_current_user):
+def delete_task(taskId, session, get_current_user):
     todo = (
-        db.query(models.Tasks)
+        session.query(models.Tasks)
         .filter(
             models.Tasks.userId == get_current_user.id,
             models.Tasks.taskId == taskId,
@@ -149,7 +151,7 @@ def delete_task(taskId, db, get_current_user):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Task not found. Invalid taskId : {taskId}",
         )
-    db.commit()
+    session.commit()
     return {"message": "Todo successfully deleted."}
 
 
@@ -159,12 +161,12 @@ mark_as_completed(taskId, db, get_current_user):
 """
 
 
-def mark_as_completed(taskId, db, get_current_user):
+def mark_as_completed(taskId, session, get_current_user):
     update_todo: dict = {
         "isCompleted": True,
     }
     task = (
-        db.query(models.Tasks)
+        session.query(models.Tasks)
         .filter(
             models.Tasks.userId == get_current_user.id,
             models.Tasks.taskId == taskId,
@@ -179,5 +181,5 @@ def mark_as_completed(taskId, db, get_current_user):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Todo not found. Invalid taskId : {taskId}",
         )
-    db.commit()
+    session.commit()
     return {"message": "Todo marked as completed."}

@@ -14,9 +14,7 @@ Represents the tasks created by users.
 
 class Tasks(SQLModel, table=True):
     __tablename__ = "tasks"
-    taskId: UUID = Field(
-        primary_key=True, default_factory=uuid4, unique=True, nullable=False, index=True
-    )
+    taskId: int = Field(primary_key=True, unique=True, nullable=False, index=True)
     userId: UUID = Field(foreign_key="users.id")
     title: str
     desc: str
