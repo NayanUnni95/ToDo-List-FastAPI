@@ -1,10 +1,10 @@
 """
-This module configures the database connection for a FastAPI application using SQLAlchemy.
+This module configures the database connection for a FastAPI application using SQLModel.
 """
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from fastapi import Depends
+from sqlmodel import create_engine, Session
+from typing import Annotated
 from decouple import config
 
 POSTGRES_DB: str = config("POSTGRES_DB", default="sample")
@@ -16,17 +16,15 @@ POSTGRES_DB_URL = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{P
 
 try:
     engine = create_engine(POSTGRES_DB_URL)
-    session = sessionmaker(bind=engine, autoflush=False)
-    Base = declarative_base()
     with engine.connect() as connection:
         print("Successfully connected to the database!")
 except Exception as e:
     print(f"Database connection error: {e}")
 
 
-def get_db():
-    db = session()
-    try:
-        yield db
-    finally:
-        db.close()
+def get_session():
+    with Session(engine) as session:
+        yield session
+
+
+SessionDep = Annotated[Session, Depends(get_session)]

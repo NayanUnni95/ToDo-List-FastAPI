@@ -14,8 +14,10 @@ signup_user(request, db):
 """
 
 
-def signup_user(request, db):
-    users = db.query(models.Users).filter(models.Users.uname == request.uname).first()
+def signup_user(request, session):
+    users = (
+        session.query(models.Users).filter(models.Users.uname == request.uname).first()
+    )
     if users:
         raise HTTPException(
             status_code=400,
@@ -26,9 +28,9 @@ def signup_user(request, db):
         uname=request.uname,
         password=Hash.bcrypt(request.password),
     )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
     return schemas.SignupRes(
         id=new_user.id,
         name=new_user.name,
@@ -43,8 +45,12 @@ login_user(request: schemas.UserLogin, db):
 """
 
 
-def login_user(request: schemas.UserLogin, db):
-    user = db.query(models.Users).filter(models.Users.uname == request.username).first()
+def login_user(request: schemas.UserLogin, session):
+    user = (
+        session.query(models.Users)
+        .filter(models.Users.uname == request.username)
+        .first()
+    )
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -67,9 +73,9 @@ delete_user(db, get_current_user):
 """
 
 
-async def delete_user(db, get_current_user):
+async def delete_user(session, get_current_user):
     user = (
-        db.query(models.Users)
+        session.query(models.Users)
         .filter(models.Users.id == get_current_user.id)
         .delete(synchronize_session=False)
     )
@@ -78,5 +84,5 @@ async def delete_user(db, get_current_user):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User Not Found...",
         )
-    db.commit()
+    session.commit()
     return {"message": "Account successfully deleted."}

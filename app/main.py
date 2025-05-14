@@ -1,13 +1,17 @@
 from fastapi import FastAPI
-from .routers import user, todo
-from .database.config import engine, Base
+from sqlmodel import SQLModel
+
+from .routers import user
+from .database.config import engine
+from .model.models import Users, Tasks
 
 app = FastAPI()
 
 app.include_router(user.router)
-app.include_router(todo.router)
+# app.include_router(todo.router)
 
-Base.metadata.create_all(bind=engine)
+
+SQLModel.metadata.create_all(engine)
 
 
 @app.get("/")

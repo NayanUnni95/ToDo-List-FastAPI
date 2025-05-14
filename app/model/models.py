@@ -1,44 +1,43 @@
 """
-This module defines the SQLAlchemy ORM models for the ToDo List FastAPI application.
+This module defines the SQLModel ORM models for the ToDo List FastAPI application.
 """
 
-from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, DateTime
-import uuid
-from sqlalchemy.dialects.postgresql import UUID
-from ..database.config import Base
-from sqlalchemy.orm import relationship
-
-"""
-Represents the users of the application.
-"""
-
-
-class Users(Base):
-    __tablename__ = "users"
-    id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        unique=True,
-        default=uuid.uuid4,
-        index=True,
-    )
-    name = Column(String)
-    uname = Column(String)
-    password = Column(String)
-    task = relationship("Tasks", back_populates="creator")
-
+from sqlmodel import SQLModel, Field, Relationship
+from uuid import UUID, uuid4
+from typing import Optional, List
+from datetime import datetime
 
 """
 Represents the tasks created by users.
 """
 
 
-class Tasks(Base):
+class Tasks(SQLModel, table=True):
     __tablename__ = "tasks"
-    taskId = Column(Integer, primary_key=True, unique=True, index=True)
-    userId = Column(UUID(as_uuid=True), ForeignKey("users.id"))
-    title = Column(String)
-    desc = Column(String)
-    deadline = Column(DateTime)
-    isCompleted = Column(Boolean, default=False)
-    creator = relationship("Users", back_populates="task")
+    taskId: UUID = Field(
+        primary_key=True, default_factory=uuid4, unique=True, nullable=False, index=True
+    )
+    userId: UUID = Field(foreign_key="users.id")
+    title: str
+    desc: str
+    deadline: datetime
+    isCompleted: bool = Field(default=False)
+    creator: Optional["Users"] = Relationship(back_populates="task")
+    model_config = {"arbitrary_types_allowed": True}
+
+
+"""
+Represents the users of the application.
+"""
+
+
+class Users(SQLModel, table=True):
+    __tablename__ = "users"
+    id: UUID = Field(
+        primary_key=True, default_factory=uuid4, unique=True, nullable=False, index=True
+    )
+    name: str
+    uname: Optional[str]
+    password: str
+    task: Optional[List[Tasks]] = Relationship(back_populates="creator")
+    model_config = {"arbitrary_types_allowed": True}
