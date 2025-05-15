@@ -92,6 +92,11 @@ delete_user(db, get_current_user):
 
 
 async def delete_user(session, get_current_user):
+    task = (
+        session.query(models.Tasks)
+        .filter(models.Tasks.userId == get_current_user.id)
+        .delete()
+    )
     user = (
         session.query(models.Users)
         .filter(models.Users.id == get_current_user.id)

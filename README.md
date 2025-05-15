@@ -35,14 +35,19 @@ pip install -r requirements.txt
 ### Run the Application:
 
 ```bash
-uvicorn app.main:app --reload
+python3 run.py
 ```
 
-### [API Doc](http://localhost:8000/docs)
+### 📡 API Documentation
+
+#### [Swagger](http://localhost:8000/docs)
+
+#### [ReDoc](http://localhost:8000/redoc)
 
 ### Project features
 
 - [x] Login, SignUp etc.
+- [x] Auth(access, refresh)
 - [x] Create ToDo
 - [x] View ToDo
 - [x] Mark a todo as completed
