@@ -16,6 +16,8 @@ the corresponding user from the database. Raises an HTTPException if the token i
 invalid or the user does not exist.
 """
 
+# Get the user details
+
 
 async def get_current_user(session: SessionDep, token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -23,7 +25,13 @@ async def get_current_user(session: SessionDep, token: str = Depends(oauth2_sche
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    return verify_token(session, token, credentials_exception)
 
+
+# Verify the token expire or not
+
+
+def verify_token(session, token, credentials_exception: HTTPException):
     try:
         payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
         username = payload.get("uname")

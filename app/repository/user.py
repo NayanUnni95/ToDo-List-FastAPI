@@ -6,7 +6,8 @@ from fastapi import HTTPException, status
 from ..schema import schemas
 from ..model import models
 from ..services.hashing import Hash
-from ..services.jwtToken import create_access_token
+from ..services.jwtToken import create_access_token, create_refresh_token
+from ..services.Oauth2 import verify_token
 
 """
 signup_user(request, db):
@@ -64,7 +65,24 @@ def login_user(request: schemas.UserLogin, session):
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(data={"uname": user.uname})
-    return schemas.Token(access_token=access_token, token_type="bearer")
+    refresh_token = create_refresh_token(data={"uname": user.uname})
+    return schemas.Token(
+        access_token=access_token, refresh_token=refresh_token, token_type="bearer"
+    )
+
+
+def get_tokens(session, token_data):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    user = verify_token(session, token_data.credentials, credentials_exception)
+    access_token = create_access_token(data={"uname": user.uname})
+    refresh_token = create_refresh_token(data={"uname": user.uname})
+    return schemas.Token(
+        access_token=access_token, refresh_token=refresh_token, token_type="bearer"
+    )
 
 
 """

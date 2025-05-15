@@ -13,6 +13,9 @@ ALGORITHM: str = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
     config("ACCESS_TOKEN_EXPIRE_MINUTES", default=30)
 )
+REFRESH_TOKEN_EXPIRE_MINUTES: int = int(
+    config("REFRESH_TOKEN_EXPIRE_MINUTES", default=60)
+)
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/login",
@@ -25,6 +28,16 @@ oauth2_scheme = OAuth2PasswordBearer(
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "type":"access"})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def create_refresh_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(
+        minutes=REFRESH_TOKEN_EXPIRE_MINUTES
+    )
+    to_encode.update({"exp": expire, "type":"refresh"})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

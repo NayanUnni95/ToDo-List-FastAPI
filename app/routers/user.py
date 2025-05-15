@@ -4,7 +4,7 @@ This module defines the user-related API endpoints for the FastAPI application.
 
 from fastapi import APIRouter, Depends
 
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, HTTPBearer
 from ..schema import schemas
 from ..database import config
 
@@ -13,6 +13,7 @@ from ..repository import user
 
 
 router = APIRouter(tags=["User"])
+refresh_token_schema = HTTPBearer()
 
 """
 - POST /signup: Endpoint for user registration.
@@ -35,6 +36,20 @@ async def login(
     request: OAuth2PasswordRequestForm = Depends(),
 ):
     return user.login_user(request, session)
+
+
+"""
+- POST /refresh: Endpoint for retrieve the currently authenticated user details.
+"""
+
+
+@router.post("/refresh")
+def get_token(
+    session: config.SessionDep,
+    token_data: HTTPBearer = Depends(refresh_token_schema),
+    get_current_user: schemas.CurrentUser = Depends(get_current_user),
+):
+    return user.get_tokens(session, token_data)
 
 
 """
