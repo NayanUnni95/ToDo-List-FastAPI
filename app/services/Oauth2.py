@@ -42,3 +42,19 @@ def verify_token(session, token, credentials_exception: HTTPException):
     except JWTError:
         raise credentials_exception
     return user
+
+
+def verify_token_valid_or_invalid(token):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        username = payload.get("uname")
+        if not username:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    return username
