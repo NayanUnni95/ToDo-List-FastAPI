@@ -20,7 +20,7 @@ class SignupRes(BaseModel):
     message: str = "Success..."
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserLogin(BaseModel):
@@ -79,4 +79,4 @@ class GroupBy(BaseModel):
     timeElapsed: List | None = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
