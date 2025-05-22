@@ -44,4 +44,4 @@ async def websocket_connection(token: str, websocket: WebSocket):
             await manager.broadcast(data, user, websocket)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-        await manager.broadcast(f"{user} left the room")
+        await manager.broadcast("Left the room", user, websocket)

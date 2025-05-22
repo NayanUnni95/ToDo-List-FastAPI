@@ -54,3 +54,5 @@ python3 run.py
 - [x] Edit ToDo
 - [x] Delete ToDo
 - [x] Group by completed, To be done & Time elapsed
+
+- [x] WebSocket(Group Chat)
